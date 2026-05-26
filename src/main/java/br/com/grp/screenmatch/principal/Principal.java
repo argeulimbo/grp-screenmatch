@@ -3,12 +3,12 @@ package br.com.grp.screenmatch.principal;
 import br.com.grp.screenmatch.model.DadosEpisodio;
 import br.com.grp.screenmatch.model.DadosSerie;
 import br.com.grp.screenmatch.model.DadosTemporada;
+import br.com.grp.screenmatch.model.Episodio;
 import br.com.grp.screenmatch.service.ConsumoApi;
 import br.com.grp.screenmatch.service.ConverteDados;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
@@ -21,7 +21,7 @@ public class Principal {
 
     public void exibeMenu() {
         System.out.println("Digite o nome da série para busca: ");
-        var nomeSerie = sc.next();
+        String nomeSerie = sc.next();
         consumo = new ConsumoApi();
         var json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
 
@@ -37,8 +37,23 @@ public class Principal {
             temporadas.add(dadosTemporada);
         }
         temporadas.forEach(System.out::println);
-
         temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
         temporadas.forEach(t -> System.out.println(t.titulo()));
+
+        // Union of TOP 5 EPISODES
+        List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .collect(Collectors.toList());
+
+        // Order by Rating
+        System.out.println("\nTop 5 episódios");
+        dadosEpisodios.stream()
+                .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+                .limit(5)
+                .forEach(System.out::println);
+
+        List<Episodio> episodios;
+
     }
 }
