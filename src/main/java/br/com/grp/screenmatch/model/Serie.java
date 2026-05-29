@@ -1,22 +1,40 @@
 package br.com.grp.screenmatch.model;
 
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity(name = "Serie")
+@Table(name = "series")
 public class Serie {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true)
     private String titulo;
     private Integer totalTemporadas;
     private Double avaliacao;
+
+    @Enumerated(EnumType.STRING)
     private Categoria genero;
     private String atores;
     private String poster;
     private String sinopse;
+
+    @Transient
+    private List<Episodio> episodios = new ArrayList<Episodio>();
 
     public Serie(DadosSerie dadosSerie) {
         this.titulo = dadosSerie.titulo();

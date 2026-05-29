@@ -3,8 +3,10 @@ package br.com.grp.screenmatch.principal;
 import br.com.grp.screenmatch.model.DadosSerie;
 import br.com.grp.screenmatch.model.DadosTemporada;
 import br.com.grp.screenmatch.model.Serie;
+import br.com.grp.screenmatch.repository.SerieRepository;
 import br.com.grp.screenmatch.service.ConsumoApi;
 import br.com.grp.screenmatch.service.ConverteDados;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,15 +15,20 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Principal {
+    Scanner sc = new Scanner(System.in);
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
     private final String API_KEY = "&apikey=3b92e6d";
-    Scanner sc = new Scanner(System.in);
-
     private ConsumoApi consumo = new ConsumoApi();
     private ConverteDados conversor = new ConverteDados();
     private String string;
 
     private List<DadosSerie> dadosSeries = new  ArrayList<>();
+
+    @Autowired
+    private SerieRepository serieRepository;
+
+    public Principal(SerieRepository serieRepository) {
+    }
 
     public void exibeMenu() {
         var opcao = -1;
@@ -68,7 +75,9 @@ public class Principal {
 
     private void buscarSerieWeb() {
         DadosSerie dados = getDadosSerie();
-        dadosSeries.add(dados);
+        Serie serie = new Serie(dados);
+        //dadosSeries.add(dados);
+        serieRepository.save(serie);
         System.out.println(dados);
     }
 
