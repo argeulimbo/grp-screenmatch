@@ -2,12 +2,15 @@ package br.com.grp.screenmatch.principal;
 
 import br.com.grp.screenmatch.model.DadosSerie;
 import br.com.grp.screenmatch.model.DadosTemporada;
+import br.com.grp.screenmatch.model.Serie;
 import br.com.grp.screenmatch.service.ConsumoApi;
 import br.com.grp.screenmatch.service.ConverteDados;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private final String ENDERECO = "https://www.omdbapi.com/?t=";
@@ -54,7 +57,13 @@ public class Principal {
 }
 
     private void listarSeriesBuscadas() {
-        dadosSeries.forEach(System.out::println);
+        List<Serie> series = new ArrayList<>();
+        dadosSeries.stream()
+                        .map(d -> new Serie(d))
+                                .collect(Collectors.toList());
+        series.stream()
+                .sorted(Comparator.comparing(Serie::getGenero))
+                .forEach(System.out::println);
     }
 
     private void buscarSerieWeb() {
@@ -65,7 +74,7 @@ public class Principal {
 
     private DadosSerie getDadosSerie() {
         System.out.println("Digite o nome do serie: ");
-        String nomeSerie =  sc.next();
+        var nomeSerie =  sc.next();
         var json = consumo.obterDados(ENDERECO + nomeSerie.replace(" ", "+") + API_KEY);
         DadosSerie dados = conversor.obterDados(json, DadosSerie.class);
         return dados;

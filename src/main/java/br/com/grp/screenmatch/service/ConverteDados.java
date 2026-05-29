@@ -1,6 +1,5 @@
 package br.com.grp.screenmatch.service;
 
-import br.com.grp.screenmatch.model.DadosSerie;
 import tools.jackson.databind.ObjectMapper;
 
 public class ConverteDados implements IConverteDados {
@@ -8,6 +7,10 @@ public class ConverteDados implements IConverteDados {
 
     @Override
     public <T> T obterDados(String json, Class<T> classe) {
-        return mapper.readValue(json, classe);
+        try {
+            return mapper.readValue(json, classe);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
